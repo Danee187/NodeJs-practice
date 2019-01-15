@@ -1,52 +1,44 @@
-const http = require("http");
-const {parse: URLParse} = require('url');
-const {parse: queryParse} = require('querystring'); // Ezzel tudjuk a query stringeket parsolni (amik az urlben a ? jel után vannak)
+const express = require('express');
+const cors = require('cors');
+const bodyparser = require('body-parser');
+const config = require('./config.js');
+const router = require('./router.js');
 
-const DEFAULT_PORT = 3000;
-let port = DEFAULT_PORT;
-const args = process.argv.slice(2);
-/* console.log(args); */
+const app = express();
 
-if(args[0]) {
-    port = parseInt(args[0], 10);
-}
+app.use(cors()); // Meglehet monddani neki, hogy milyen http methódusokkal érhető el a szerver.
 
-const handler = (req, res) => {
-   // console.log(req.url); // beérkezett url lekérése
-    const reqURL = URLParse(req.url); // Ezzel csak a routing adatokat szedi ki az URL-ből. A plusz infokat nem. 
-    
-    switch(reqURL.pathname) {
-        case '/hello': {
-            //Ha 'hello' útra akarunk menni akkor ez fut le
-            let response = "Most a 'hello'-n vagy !!!"
+app.use(bodyparser.json());
 
-            const query = queryParse(reqURL.query);
-            if(query.nev) {
-                response +=` Szia ${query.nev.charAt(0).toUpperCase() + query.nev.slice(1)}`;
-            }
+app.use((req, res, next) => {
+    console.log(`${req.method}, ${req.url} at ${new Date()}`);
+    next();
+}); 
 
-            res.end(`${response}!`);
-            
-            break;
-        }
-        
-        default: {
-            res.writeHead(404); //nem talált semmit - server code
-            res.end('Not found');
-        }
-    }
-    
-    
-    console.log(reqURL.pathname);
-    res.end("Hello");
-}
+app.use(router);
 
-const server = http.createServer(handler);
 
-server.listen(port);
-
-server.on('error', (err) => {
+// Fontos a sorrend az app.use esetében
+app.use((err, req, res, next) => {
     console.error(err);
-    process.exit(1);
+    res.status(500);
+    return res.end('Ismeretlen hiba történt az alkalmazásban');
 });
 
+app.listen(config.port, () => {
+    console.log(`alkalmazás fut a portopn: ${config.port} `);
+});
+
+
+/* 
+GET / cars  --> kilistázni a kocsikat
+GET / cars:id --> kilistázni egy kocsit
+POST / cars  --> Hozzáadni egy kocsit a kocsikhoz   
+PUT - PATCH / cars/:id --> Frissíteni egy kocsit
+DEL / cars/:id --> törlünk egy kocsit
+ */
+
+
+// CORS ->  Cross original resource saharing : kliens és a szerver közötti komunikációt tudjuk limitálni 
+// Body-parser -> json cuccosokat lehessen parsolni
+// Nodemon -> Dev eszköz. Nem kell mindig újra indítani a szervert. Hanem amikor változás történik a megadott filenál (index.js) akkor automatikusan újra indítja. 
