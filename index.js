@@ -4,6 +4,7 @@ const bodyparser = require('body-parser');
 const helmet = require('helmet');
 const router = require('./router.js');
 const { port } = require('./config.js');
+const logger = require('./logger');
 
 const app = express();
 
@@ -13,7 +14,8 @@ app.use(helmet());
 
 // Logger - ki írja mikor milyen kérés érkezett be a szerverre
 app.use((req, res, next) => {
-    console.log(`${req.method}, ${req.url} at ${new Date()}`);
+   // console.log(`${req.method}, ${req.url} at ${new Date()}`); --> ez helyett is winstont használunk
+   logger.debug(`${req.method}, ${req.url} at ${new Date()}`);
     next();
 }); 
 
@@ -36,11 +38,11 @@ app.use((err, req, res, next) => {
 app.listen(port, (err) => {
 
     if(err) {
-        console.err(err);
+        logger.err(err);
         process.exit(1);
     }
 
-    console.log(`Az alkalmazás a következő URL-en érhető el: http://loclahost:${port}`);
+    logger.info(`Az alkalmazás a következő URL-en érhető el: http://loclahost:${port}`);
 });
 
 
