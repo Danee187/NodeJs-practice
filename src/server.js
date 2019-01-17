@@ -2,11 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const bodyparser = require('body-parser');
 const helmet = require('helmet');
+const http = require('http');
 const router = require('./router.js');
 const { port } = require('./config.js');
 const logger = require('./logger');
+const { promisify } = require('util'); // Callback-es függvényeket promise-ra állítja át
 
 const app = express();
+const server = http.createServer(app);
 
 app.use(cors()); // Meglehet monddani neki, hogy milyen http methódusokkal érhető el a szerver.
 app.use(bodyparser.json());
@@ -35,7 +38,15 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(port, (err) => {
+
+const listenPromise = promisify(server.listen.bind(server, port));
+
+module.exports = {
+    init: listenPromise,
+};
+
+// OLD 
+/* app.listen(port, (err) => {
 
     if(err) {
         logger.err(err);
@@ -44,7 +55,7 @@ app.listen(port, (err) => {
 
     logger.info(`Az alkalmazás a következő URL-en érhető el: http://loclahost:${port}`);
 });
-
+ */
 
 /* 
 GET / cars  --> kilistázni a kocsikat
@@ -53,6 +64,9 @@ POST / cars  --> Hozzáadni egy kocsit a kocsikhoz
 PUT - PATCH / cars/:id --> Frissíteni egy kocsit
 DEL / cars/:id --> törlünk egy kocsit
  */
+
+
+ // MONGODB USER --> userdb : password123 
 
 
 // CORS ->  Cross original resource saharing : kliens és a szerver közötti komunikációt tudjuk limitálni 
