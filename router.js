@@ -2,7 +2,23 @@ const { Router } = require('express');
 
 const router = Router();
 
-router.get('/hello',(req, res) => {
+router.get('/', (req, res) => {
+    res.send({
+        message: "Ok",
+    });
+});
+
+
+module.exports = router;
+
+
+
+
+
+
+
+// OLD
+/* router.get('/hello',(req, res) => {
     res.send('Szia');
 });
 
@@ -18,3 +34,4 @@ router.get('/hiba', (req, res) => {
 });
 
 module.exports = router;
+ */

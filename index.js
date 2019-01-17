@@ -1,32 +1,46 @@
 const express = require('express');
 const cors = require('cors');
 const bodyparser = require('body-parser');
-const config = require('./config.js');
+const helmet = require('helmet');
 const router = require('./router.js');
+const { port } = require('./config.js');
 
 const app = express();
 
 app.use(cors()); // Meglehet monddani neki, hogy milyen http methódusokkal érhető el a szerver.
-
 app.use(bodyparser.json());
+app.use(helmet());
 
+// Logger - ki írja mikor milyen kérés érkezett be a szerverre
 app.use((req, res, next) => {
     console.log(`${req.method}, ${req.url} at ${new Date()}`);
     next();
 }); 
 
 app.use(router);
-
-
 // Fontos a sorrend az app.use esetében
+
+
+// Error kezelés
 app.use((err, req, res, next) => {
-    console.error(err);
+    if (res.headersSent) {
+        return next(err);
+    }
+
     res.status(500);
-    return res.end('Ismeretlen hiba történt az alkalmazásban');
+    return res.end({
+        message: "Hiba történt",
+    });
 });
 
-app.listen(config.port, () => {
-    console.log(`alkalmazás fut a portopn: ${config.port} `);
+app.listen(port, (err) => {
+
+    if(err) {
+        console.err(err);
+        process.exit(1);
+    }
+
+    console.log(`Az alkalmazás a következő URL-en érhető el: http://loclahost:${port}`);
 });
 
 
