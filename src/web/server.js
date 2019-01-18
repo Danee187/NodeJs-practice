@@ -4,8 +4,8 @@ const bodyparser = require('body-parser');
 const helmet = require('helmet');
 const http = require('http');
 const router = require('./router.js');
-const { port } = require('./config.js');
-const logger = require('./logger');
+const { port } = require('../config.js');
+const logger = require('../logger');
 const { promisify } = require('util'); // Callback-es függvényeket promise-ra állítja át
 
 const app = express();
