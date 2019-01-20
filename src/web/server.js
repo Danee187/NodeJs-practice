@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyparser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const http = require('http');
 const router = require('./router.js');
@@ -12,6 +13,7 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(cors()); // Meglehet monddani neki, hogy milyen http methódusokkal érhető el a szerver.
+app.use(cookieParser);
 app.use(bodyparser.json());
 app.use(helmet());
 
