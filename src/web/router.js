@@ -2,7 +2,7 @@ const { Router } = require('express');
 const getCurrency = require('../currency');
 const { get, list, insert, update, remove } = require('./expenseHandler');
 const { register, login } = require('./userHandler');
-const auth = require('./auth/cookies');  // auth -> simple, basic
+const auth = require('./auth/jwtCookies');  // auth -> simple, basic
 
 const router = Router();
 

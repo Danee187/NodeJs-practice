@@ -13,7 +13,7 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(cors()); // Meglehet monddani neki, hogy milyen http methódusokkal érhető el a szerver.
-app.use(cookieParser);
+app.use(cookieParser());
 app.use(bodyparser.json());
 app.use(helmet());
 
